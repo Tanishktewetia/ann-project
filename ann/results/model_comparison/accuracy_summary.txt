@@ -1,0 +1,48 @@
+Svm:
+Training Accuracy: 94.88%
+Testing Accuracy: 94.75%
+CV Accuracy: 92.50%
+Ann:
+Training Accuracy: 94.88%
+Testing Accuracy: 92.75%
+CV Accuracy: 88.00%
+Voting Ensemble:
+Training Accuracy: 95.31%
+Testing Accuracy: 92.50%
+CV Accuracy: 90.62%
+Stacking Ensemble:
+Training Accuracy: 96.19%
+Testing Accuracy: 91.25%
+CV Accuracy: 87.69%
+Gradient Boosting:
+Training Accuracy: 95.44%
+Testing Accuracy: 91.00%
+CV Accuracy: 86.94%
+Logistic Regression:
+Training Accuracy: 91.44%
+Testing Accuracy: 89.25%
+CV Accuracy: 87.44%
+Lightgbm:
+Training Accuracy: 91.00%
+Testing Accuracy: 86.50%
+CV Accuracy: 84.56%
+Xgboost:
+Training Accuracy: 87.56%
+Testing Accuracy: 83.50%
+CV Accuracy: 82.75%
+Random Forest:
+Training Accuracy: 87.69%
+Testing Accuracy: 82.75%
+CV Accuracy: 81.69%
+Decision Tree:
+Training Accuracy: 83.38%
+Testing Accuracy: 79.25%
+CV Accuracy: 79.75%
+Extra Trees:
+Training Accuracy: 83.81%
+Testing Accuracy: 79.25%
+CV Accuracy: 80.69%
+Knn:
+Training Accuracy: 68.62%
+Testing Accuracy: 57.25%
+CV Accuracy: 57.00%

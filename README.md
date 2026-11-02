@@ -1,211 +1,64 @@
-# Mobile Price Prediction
+# Mobile Price Classification Lab
 
-<div align="center">
+A static report website for the project's saved mobile-price model results. It is designed to deploy directly from this repository on Vercel: no database, API server, Python runtime, or repeat training step is required.
 
-## An interpretable benchmark of classical machine learning and neural networks
+## What the website includes
 
-Predict a phone's price tier from its hardware specifications using a scaled
-artificial neural network and six benchmark classifiers.
+- **Overview** — dataset and evaluation snapshot, best saved holdout score, and a comparison chart.
+- **Model bench** — training, holdout, and cross-validation accuracy for the 12 models in the saved summary.
+- **Predictions** — filter the precomputed 1,000-row test outputs by model, class, or record ID; preview a stored prediction and download its CSV.
+- **Model insights** — saved confusion-matrix and SHAP plots.
+- **About this study** — what the report includes and deployment notes.
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-modeling-F7931E?logo=scikit-learn&logoColor=white)
-![Dataset](https://img.shields.io/badge/dataset-2%2C000%20train%20%7C%201%2C000%20test-0F766E)
-![License](https://img.shields.io/badge/license-not%20specified-lightgrey)
+The prediction preview includes a short, clearly described preparation animation. It reveals a row already present in that model's CSV; it does **not** run inference or train a model. Test-set rows have no known target in `test.csv`, so the website does not claim test-set accuracy.
 
-</div>
+## Deploy on Vercel
 
----
+1. Push or connect this repository to your Vercel account.
+2. Create a Vercel project for the repository. Set **Root Directory** to the folder containing this `README.md`, `index.html`, and `vercel.json` (the `ann-project` folder in the provided desktop layout).
+3. Choose **Other** as the framework preset. Leave install and build commands empty; the site is plain HTML, CSS, and JavaScript.
+4. Deploy the project root as the static output. No environment variables are needed.
+5. Verify the Overview, Model bench, Predictions filters/CSV download, and Model insights plots in the deployment.
 
-## Overview
+`vercel.json` enables clean URLs and disables trailing slashes. All pages are sections of one static HTML app, with hash navigation; data and images are served as ordinary files from `ann/results/`.
 
-This project classifies mobile phones into four price ranges from technical
-specifications. It includes:
+## Run locally
 
-- A two-hidden-layer ANN built with `sklearn.neural_network.MLPClassifier`
-- Six comparison models: Logistic Regression, linear SVM, Decision Tree,
-	Random Forest, KNN, and a soft-voting ensemble
-- Standardized preprocessing shared by the trained models
-- Validation metrics, confusion matrices, loss curves, and comparison dashboards
-- CSV predictions for every trained model on the unlabeled test set
-
-The project is designed as an end-to-end machine-learning experiment: prepare
-the data, train models, evaluate them fairly, compare their behavior, and save
-reusable artifacts.
-
-## Results at a glance
-
-The best validation accuracy is shared by Logistic Regression, linear SVM, and
-the voting ensemble. Logistic Regression has the strongest 5-fold cross-validation
-mean and is the most consistent choice for this dataset.
-
-| Model | Validation accuracy | 5-fold CV accuracy |
-| --- | ---: | ---: |
-| Logistic Regression | **97.5%** | **97.3% ± 0.6%** |
-| Linear SVM | **97.5%** | 97.0% ± 0.4% |
-| Voting Ensemble | **97.5%** | 96.5% ± 0.5% |
-| ANN (`tanh`) | 93.3% | 94.0% ± 1.9% |
-| Random Forest | 87.8% | 88.5% ± 1.1% |
-| Decision Tree | 85.0% | 83.5% ± 0.3% |
-| KNN | 50.0% | 50.4% ± 1.0% |
-
-> The results are based on the committed generated artifacts in
-> [`ann/results/model_comparison`](ann/results/model_comparison). Re-run the
-> training scripts to regenerate them.
-
-## Visual report
-
-<p align="center">
-	<img src="ann/results/model_comparison/performance_dashboard.png" alt="Model performance dashboard" width="820">
-</p>
-
-<p align="center">
-	<img src="ann/results/ann/graphs/loss_curve.png" alt="ANN training loss curve" width="390">
-	<img src="ann/results/ann/graphs/confusion_matrix.png" alt="ANN confusion matrix" width="390">
-</p>
-
-## Dataset
-
-The project uses a mobile-price dataset with 2,000 labeled training rows and
-1,000 test rows. The target, `price_range`, has four classes:
-
-| Label | Meaning |
-| ---: | --- |
-| `0` | Low cost |
-| `1` | Medium cost |
-| `2` | High cost |
-| `3` | Very high cost |
-
-Features describe battery capacity, connectivity, cameras, memory, screen
-dimensions, processor cores, weight, talk time, and RAM. The training data
-contains the target column; `test.csv` contains an `id` column used to keep
-predictions associated with their original rows.
-
-### Preprocessing
-
-1. Load `dataset/train.csv`.
-2. Split the labeled data into stratified training and validation sets using an
-	 80/20 split and `random_state=42`.
-3. Fit a `StandardScaler` on the training features only.
-4. Transform validation and test features with the saved scaler.
-5. Save the scaler to `models/preprocessing/scaler.pkl`.
-
-The strong relationship between `ram` and `price_range` makes the dataset
-particularly favorable to linear classifiers. That is why the tuned linear
-models outperform the ANN here; the ANN is included as the central experiment,
-not because it is automatically the best model for every dataset.
-
-## Quick start
-
-### 1. Set up the environment
+Serve the repository root with any static file server. For example:
 
 ```bash
-cd ann
-python -m venv .venv
+python -m http.server 8000
 ```
 
-Activate the environment:
+Then open `http://localhost:8000`. Opening `index.html` directly as a `file://` URL may block browser `fetch()` calls to the saved CSV files.
 
-```bash
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-
-# macOS/Linux
-source .venv/bin/activate
-```
-
-Install the dependencies:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-### 2. Train the ANN
-
-```bash
-python train.py
-```
-
-This trains the `MLPClassifier`, prints validation metrics, and writes the ANN
-model, metrics CSV, confusion matrix, loss curve, and metrics summary.
-
-### 3. Compare all models
-
-```bash
-python compare_models.py
-```
-
-This trains every classifier, computes validation metrics and 5-fold
-cross-validation accuracy, saves each model, generates comparison charts, and
-creates test predictions.
-
-### 4. Predict with one saved model
-
-The selected model must already have been trained by `compare_models.py`:
-
-```bash
-python predict_model.py --model logistic_regression
-```
-
-Available model names are `ann`, `logistic_regression`, `decision_tree`,
-`random_forest`, `svm`, `knn`, and `voting_ensemble`.
-
-### Optional: show the ANN training demonstration
-
-```bash
-python train_demo.py
-```
-
-This runs the same ANN training flow with verbose iteration output.
-
-## Project structure
+## Project contents
 
 ```text
-ann-project/
-├── ann/
-│   ├── dataset/
-│   │   ├── train.csv                 # Labeled training data
-│   │   └── test.csv                  # Unlabeled prediction data
-│   ├── models/
-│   │   ├── ann/model.pkl             # Trained ANN
-│   │   ├── benchmarks/<model>/       # Saved comparison models
-│   │   └── preprocessing/scaler.pkl  # Shared fitted scaler
-│   ├── results/
-│   │   ├── ann/                      # ANN metrics and graphs
-│   │   ├── model_comparison/         # Benchmark tables and dashboards
-│   │   └── predictions/              # Per-model test predictions
-│   ├── compare_models.py             # Train and compare all classifiers
-│   ├── predict_model.py              # Predict with a saved classifier
-│   ├── train.py                      # Train and evaluate the ANN
-│   ├── train_demo.py                 # Verbose ANN demonstration
-│   ├── utils.py                      # Loading and scaling helpers
-│   └── requirements.txt
-└── README.md
+index.html              Static website entry point
+styles.css              Responsive interface styles
+app.js                  Page navigation and saved-output rendering
+vercel.json             Vercel static-site settings
+favicon.svg             Project mark
+models_description.md   Model notes
+ann/
+  dataset/               Existing train/test CSV files
+  models/                Saved trained models and preprocessing artifacts
+  results/
+    model_comparison/    Accuracy report and saved model plots
+    predictions/         Precomputed predictions CSV for each model
+    advanced_pipeline/   Additional saved comparison and explanation outputs
 ```
 
-## Output artifacts
+## Data and maintenance notes
 
-| Path | Contents |
-| --- | --- |
-| `ann/models/` | Serialized models and the fitted preprocessing scaler |
-| `ann/results/ann/metrics.csv` | ANN accuracy, precision, recall, and F1 score |
-| `ann/results/ann/graphs/` | ANN confusion matrix, loss curve, and metric summary |
-| `ann/results/model_comparison/metrics_comparison.csv` | All model metrics and CV scores |
-| `ann/results/model_comparison/performance_dashboard.png` | Visual model comparison |
-| `ann/results/predictions/<model>/predictions.csv` | Test IDs and predicted price ranges |
+- The model bench reads `ann/results/model_comparison/accuracy_summary.txt` at runtime and displays the saved training, testing/holdout, and cross-validation accuracy values.
+- Predictions are loaded from `ann/results/predictions/<model>/predictions.csv`. The website parses these files in the browser for filters, counts, previews, and downloads.
+- The **testing accuracy** label in the original report refers to its validation/holdout evaluation split. It is not a score on the separate unlabeled `ann/dataset/test.csv` file.
+- Model images are the saved PNGs under `ann/results/model_comparison/`. No graph generation occurs in the browser.
+- The website does not load or execute the `.pkl` files. It presents existing results only.
+- To refresh this report after intentionally changing analysis outputs, keep the summary, prediction CSVs, and plot paths in sync. A static deployment serves the files present in the deployed commit; local, uncommitted changes are not automatically published.
 
-## Evaluation notes
+## Original ML workflow
 
-Accuracy, macro precision, macro recall, and macro F1 are used because this is
-a four-class classification problem. R² is not appropriate here. The 5-fold
-cross-validation score is included to check that the headline validation result
-is not only the product of one favorable split.
-
-## Further reading
-
-The implementation-level notes and original experiment write-up are available
-in [`ann/README.md`](ann/README.md).
-
-## License
-
-No license has been specified for this repository yet. Add a license before
-redistributing the code or dataset.
+The Python analysis scripts and dependencies remain in `ann/`. They are separate from the static website and are not used by Vercel to serve it. Run the existing pipeline locally only when you deliberately want to regenerate results; it is not required for deploying or viewing this report.

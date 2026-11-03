@@ -7,10 +7,11 @@ A static report website for the project's saved mobile-price model results. It i
 - **Overview** — dataset and evaluation snapshot, best saved holdout score, and a comparison chart.
 - **Model bench** — training, holdout, and cross-validation accuracy for the 12 models in the saved summary.
 - **Predictions** — filter the precomputed 1,000-row test outputs by model, class, or record ID; preview a stored prediction and download its CSV.
+- **Price estimator** — enter the model’s 20 hardware/connectivity features and view an animated, browser-side demonstration across four relative price classes.
 - **Model insights** — saved confusion-matrix and SHAP plots.
 - **About this study** — what the report includes and deployment notes.
 
-The prediction preview includes a short, clearly described preparation animation. It reveals a row already present in that model's CSV; it does **not** run inference or train a model. Test-set rows have no known target in `test.csv`, so the website does not claim test-set accuracy.
+The prediction preview includes a short, clearly described preparation animation. It reveals a row already present in that model CSV; it does **not** run inference or train a model. The Price estimator uses a simple illustrative browser-side heuristic: it does not invoke the trained model, and its demo score is neither a probability nor a calibrated prediction. Test-set rows have no known target in `test.csv`, so the website does not claim test-set accuracy.
 
 ## Deploy on Vercel
 
